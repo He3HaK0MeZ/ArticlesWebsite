@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("myapp1", "0002_article_category_delete_worker_article_category_and_more"),
+        ("blog", "0002_article_category_delete_worker_article_category_and_more"),
     ]
 
     operations = [

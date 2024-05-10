@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ("myapp1", "0001_initial"),
+        ("blog", "0001_initial"),
     ]
 
     operations = [
@@ -132,7 +132,7 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="children",
-                        to="myapp1.category",
+                        to="blog.category",
                         verbose_name="Родительская категория",
                     ),
                 ),
@@ -152,7 +152,7 @@ class Migration(migrations.Migration):
             field=mptt.fields.TreeForeignKey(
                 on_delete=django.db.models.deletion.PROTECT,
                 related_name="articles",
-                to="myapp1.category",
+                to="blog.category",
                 verbose_name="Категория",
             ),
         ),
