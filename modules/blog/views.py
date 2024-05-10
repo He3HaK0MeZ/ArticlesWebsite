@@ -2,12 +2,15 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.shortcuts import render
 from django.core.paginator import Paginator
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
 
 from .models import Article, Category
 from .forms import ArticleCreateForm, ArticleUpdateForm
+from ..services.mixins import AuthorRequiredMixin
 
 
-class ArticleDeleteView(DeleteView):
+class ArticleDeleteView(AuthorRequiredMixin, DeleteView):
     """
     Представление: удаление материала
     """
@@ -22,7 +25,7 @@ class ArticleDeleteView(DeleteView):
         return context
 
 
-class ArticleUpdateView(UpdateView):
+class ArticleUpdateView(AuthorRequiredMixin, SuccessMessageMixin, UpdateView):
     """
     Представление: обновления материала на сайте
     """
@@ -30,6 +33,8 @@ class ArticleUpdateView(UpdateView):
     template_name = 'blog/articles_update.html'
     context_object_name = 'article'
     form_class = ArticleUpdateForm
+    login_url = 'home'
+    success_message = 'Материал был успешно обновлен'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -42,13 +47,14 @@ class ArticleUpdateView(UpdateView):
         return super().form_valid(form)
 
 
-class ArticleCreateView(CreateView):
+class ArticleCreateView(LoginRequiredMixin, CreateView):
     """
     Представление: создание материалов на сайте
     """
     model = Article
     template_name = 'blog/articles_create.html'
     form_class = ArticleCreateForm
+    login_url = 'home'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
