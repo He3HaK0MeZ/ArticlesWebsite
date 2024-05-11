@@ -1,1 +1,1 @@
-Electronic journal for BSBD course project
+Сайт для создания и публикации статей 
