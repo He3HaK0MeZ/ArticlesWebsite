@@ -66,6 +66,14 @@ class Article(models.Model):
             """
             return self.get_queryset().select_related('author', 'category').filter(status='published')
 
+        def detail(self):
+            """
+            Детальная статья (SQL запрос с фильтрацией для страницы со статьёй)
+            """
+            return (self.get_queryset().select_related('author', 'category')
+                    .prefetch_related('comments', 'comments__author', 'comments__author__profile')
+                    .filter(status='published'))
+
     STATUS_OPTIONS = (
         ('published', 'Опубликовано'),
         ('draft', 'Черновик')
@@ -126,12 +134,14 @@ class Comment(MPTTModel):
     )
 
     article = models.ForeignKey(Article, on_delete=models.CASCADE, verbose_name='Статья', related_name='comments')
-    author = models.ForeignKey(User, verbose_name='Автор комментария', on_delete=models.CASCADE, related_name='comments_author')
+    author = models.ForeignKey(User, verbose_name='Автор комментария', on_delete=models.CASCADE,
+                               related_name='comments_author')
     content = models.TextField(verbose_name='Текст комментария', max_length=3000)
     time_create = models.DateTimeField(verbose_name='Время добавления', auto_now_add=True)
     time_update = models.DateTimeField(verbose_name='Время обновления', auto_now=True)
     status = models.CharField(choices=STATUS_OPTIONS, default='published', verbose_name='Статус поста', max_length=10)
-    parent = TreeForeignKey('self', verbose_name='Родительский комментарий', null=True, blank=True, related_name='children', on_delete=models.CASCADE)
+    parent = TreeForeignKey('self', verbose_name='Родительский комментарий', null=True, blank=True,
+                            related_name='children', on_delete=models.CASCADE)
 
     class MTTMeta:
         order_insertion_by = ('-time_create',)
