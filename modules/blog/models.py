@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 
 from mptt.models import MPTTModel, TreeForeignKey
-
+from taggit.managers import TaggableManager
 from modules.services.utils import unique_slugify
 
 User = get_user_model()
@@ -71,7 +71,7 @@ class Article(models.Model):
             Детальная статья (SQL запрос с фильтрацией для страницы со статьёй)
             """
             return (self.get_queryset().select_related('author', 'category')
-                    .prefetch_related('comments', 'comments__author', 'comments__author__profile')
+                    .prefetch_related('comments', 'comments__author', 'comments__author__profile', 'tags')
                     .filter(status='published'))
 
     STATUS_OPTIONS = (
@@ -100,6 +100,7 @@ class Article(models.Model):
     category = TreeForeignKey('Category', on_delete=models.PROTECT, related_name='articles', verbose_name='Категория')
 
     objects = ArticleManager()
+    tags = TaggableManager()
 
     class Meta:
         db_table = 'app_articles'
